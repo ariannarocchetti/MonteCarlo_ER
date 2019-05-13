@@ -199,59 +199,50 @@ if [[ ${CONFIG} == *"optPhot"* ]]; then
 fi
 
 # Skip the rest for XENONnT, will move along as XENONnT chain takes shape
-if [[ ${EXPERIMENT} == "XENONnT" ]]; then
-    terminate 0
-fi
+#if [[ ${EXPERIMENT} == "XENONnT" ]]; then
+#    terminate 0
+#fi
 
 CPATH=${OLD_CPATH}
 source ${CVMFSDIR}/software/mc_setup_G4p9.sh
 
-if [[ ${MCFLAVOR} == NEST ]]; then
-    # Patch stage
-    if [[ ${PATCHTYPE} != "" ]]; then
-        PATCHEXEC=${RELEASEDIR}/runPatch
-        (time ${PATCHEXEC} -i ${G4_FILENAME}.root -o ${G4PATCH_FILENAME}.root -t ${PATCHTYPE};) 2>&1 | tee ${G4PATCH_FILENAME}.log
-        if [ $? -ne 0 ];
-        then
-          terminate 11
-        fi
-        PAX_INPUT_FILENAME=${G4PATCH_FILENAME}
+# nSort Stage
+ln -sf ${RELEASEDIR}/data
 
-    # Some configurations do not require Patch (or are not yet implemented)
-    else
-        PAX_INPUT_FILENAME=${G4_FILENAME}
-    fi
-else
-    # nSort Stage
-    ln -sf ${RELEASEDIR}/data
-    
-    # Old nSort executable
-    #NSORTEXEC=${RELEASEDIR}/nSort
-    #(time ${NSORTEXEC} -m 2 -s 2 -i ${G4_FILENAME} -f ${EFIELD};) 2>&1 | tee ${G4NSORT_FILENAME}.log
-    
-    # XENON1T SR0 models
-    ln -sf ${RELEASEDIR}/nSortSrc/* .
-    source deactivate
-    CPATH=${OLD_CPATH}
-    rm -r ~/.cache/rootpy/*
-    source activate pax_${FAXVERSION}
-    python GenerateGeant4.py --InputFile ${G4_FILENAME}.root --OutputFilename ${G4NSORT_FILENAME}.root
-    
-    if [ $? -ne 0 ];
-    then
-      terminate 12
-    fi
-    PAX_INPUT_FILENAME=${G4NSORT_FILENAME}
-fi
+echo "------------------------ACTIVATING nSort--------------------------------------" 
 
-RAW_FILENAME=${PAX_INPUT_FILENAME}_raw
-PAX_FILENAME=${PAX_INPUT_FILENAME}_pax
-HAX_FILENAME=${PAX_INPUT_FILENAME}_hax
-FAX_FILENAME=${FILENAME}_faxtruth
-LAX_FILENAME=${PAX_INPUT_FILENAME}_lax
+    
+# Old nSort executable
+NSORTEXEC=${RELEASEDIR}/nSort
+#NSORTEXEC=/home/rocchetti/MonteCarlo-studies-/nSort
 
+#cd nSort/
+#./nSort /scratch/$outfile 2 1 0 0 0
+
+
+#next three lines original 
+(time ${NSORTEXEC} -i ${G4_FILENAME} -d ${EXPERIMENT} 2 1 0 0 0;) 2>&1 | tee ${G4NSORT_FILENAME}.log
+echo "---------> experiment is : $EXPERIMENT"
+echo "---------> nSort activated in :$NSORTEXEC"
+    
+# XENON1T SR0 models
+ln -sf ${RELEASEDIR}/nSort/* .
+source deactivate
+CPATH=${OLD_CPATH}
+#rm -r ~/.cache/rootpy/*
+#only for 1t
+#source activate pax_head
+#python GenerateGeant4.py --InputFile ${G4_FILENAME}.root --OutputFilename ${G4NSORT_FILENAME}.root
+   
+#if [ $? -ne 0 ];
+#then
+#    terminate 12
+#fi
+#    PAX_INPUT_FILENAME=${G4NSORT_FILENAME}
+
+ 
 # Move hax output
-cp *.root *.pklz ${OUTDIR} 
+#cp *.root *.pklz ${OUTDIR} 
 
 #rm ${PAX_FILENAME}.root  # Delete pax output for now
 
