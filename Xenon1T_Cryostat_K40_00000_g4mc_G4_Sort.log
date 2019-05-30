@@ -1,0 +1,19 @@
+ Loading detector properties for XENONnT
+ Input File: /home/rocchetti/MonteCarlo-studies-/output/Xenon1T_Cryostat_K40_00000_g4mc_G4.root
+ Save to file: /home/rocchetti/MonteCarlo-studies-/output/Xenon1T_Cryostat_K40_00000_g4mc_G4_Sort.root
+ Save times to file: /home/rocchetti/MonteCarlo-studies-/output/Xenon1T_Cryostat_K40_00000_g4mc_G4_Time.dat
+ Events found 6111
+ No nVeto branches detected. Output file won't account for nVeto interactions
+AnalysisSort::AnalysisSort(): TRandom3 seed = 1824984488
+ ----------------- Event 0 K40[0.0]
+ ----------------- Event 1000 K40[0.0]
+ ----------------- Event 2000 K40[0.0]
+ ----------------- Event 3000 K40[0.0]
+ ----------------- Event 4000 K40[0.0]
+ ----------------- Event 5000 K40[0.0]
+ ----------------- Event 6000 K40[0.0]
+Events written: 717
+
+real	0m3.086s
+user	0m2.122s
+sys	0m0.205s
