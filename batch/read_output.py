@@ -29,18 +29,19 @@ for MATERIAL_STRING in material_array:
         for file in os.listdir(PATH):
             
             if file.endswith(".out"):
+                
                 counter = counter +1
-                #print(os.path.join(PATH, file))
                 path_file = os.path.join(PATH, file)
                 fp = open(path_file, 'r')
+                
                 if "fileMerger::CleanUp() Done" in fp.read():
-                    # lineList = fp.readlines()
-                #if (lineList[-1]== "fileMerger::CleanUp() Done"):
-                    print( "-----", path_file, "-----OK!")
-                    file_ok = file_ok +1
-               # else:
-                    #lineList = fp.readlines()
-                    #print( "Running at ---> ", file # lineList[-1], "\n")
+                   file_ok = file_ok +1
+                else:
+                    fp = open(path_file, 'r')
+                    lineList = fp.readlines()
+                    print(lineList[-1])
+                    print("check ---> ", MATERIAL_STRING+"/"+ISOTOPE_STRING)  #, "----", lineList[1], "\n")
+                
                 fp.close()
               
 print ("generation of :", EVENT_COUNT, "for ", len(material_array), "materials and ", len(isotope_array), "isotopes")
