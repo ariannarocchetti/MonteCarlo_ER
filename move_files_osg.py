@@ -4,7 +4,8 @@ import sys
 import os
 from datetime import date
 #import tqdm
-import glob
+
+import subprocess
 from pexpect import pxssh
 ##### INPUT PARAMETER #####
 
@@ -44,8 +45,8 @@ isotope_array = ["U238",
                 ]
 
 EVENT_COUNT = 100000
-material_array = ["SS_OuterCryostat"]
-isotope_array = ["Th232"]
+#material_array = ["SS_OuterCryostat"]
+#isotope_array = ["Th232"]
 #DATE_STRING = str(date.today())
 DATE_STRING = "20191125"
 ##### ##### #####
@@ -53,30 +54,31 @@ N_FILES = 10
 flag = 0 #0 doesn't move the files, 1 does . 
 
 
-localfile = DATE_STRING + "*"
+localfile = DATE_STRING+"T"
 mc_dir =  "/scratch/arianna/er/processing/montecarlo/output/ariannarocchetti/pegasus/montecarlo/"
 scp_path = "ariannarocchetti@login.xenon.ci-connect.net"
 storage_dir = "/sc/CASTOR2/user/a/arocchetti/storage_osg"
 scp_domain="login.xenon.ci-connect.net"
-string_dir_to_get = scp_path+mc_dir+DATE_STRING+"*"
-print(string_dir_to_get)
+
+
 #get list of directories to copy
 
-list_of_dir = glob.glob(string_dir_to_get)
-print(list_of_dir)
+command = ("ssh ariannarocchetti@login.xenon.ci-connect.net ls  /scratch/arianna/er/processing/montecarlo/output/ariannarocchetti/pegasus/montecarlo/")
+list_=subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+(out, err)=list_.communicate()
+out = out.decode("utf-8")
+out = out.split("\n")
 
-"""
-storage_path = "/sc/CASTOR2/user/a/arocchetti/storage_osg/"+DATE_STRING
-os.makedirs(storage_path, exist_ok=True)
-os.system("ls /sc/CASTOR2")
+for i in range(0, len(out)-1):
+    string_dir_to_get = scp_path+mc_dir+out[i]
 
-os.system("scp -r %s:%s/%s %s" % (scp_path, mc_dir, localfile,storage_dir) )
-print(".......extracting.....")
-os.system("for f in %s/%s/*; do tar xf $f -C %s; done" %(storage_dir, localfile, storage_path))
+    storage_path = "/sc/CASTOR2/user/a/arocchetti/storage_osg/"+DATE_STRING
+    os.makedirs(storage_path, exist_ok=True)
+    os.system("ls /sc/CASTOR2")
 
-#/sc/CASTOR2/user/a/arocchetti/storage_osg/2019-11-19/
-
-
+    os.system("scp -r %s:%s/%s %s" % (scp_path, mc_dir,out[i],storage_dir) )
+    print(".......extracting.....")
+    os.system("for f in %s/%s/*; do tar xf $f -C %s; done" %(storage_dir, out[i], storage_path))
 
 for material in material_array:
     for isotope in isotope_array:
@@ -98,9 +100,7 @@ for material in material_array:
         files_name =  "Xenon1T_ER_" + material+ "_" + isotope + "*" + "_Sort.root"
         files_to_add = dir_name_for_storage+"/"+files_name
         os.system("hadd -f %s %s"%(name_final_file, files_to_add))
-"""
 print("DONE!")
-
 
 
 
