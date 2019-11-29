@@ -48,9 +48,9 @@ EVENT_COUNT = 100000
 #material_array = ["SS_OuterCryostat"]
 #isotope_array = ["Th232"]
 #DATE_STRING = str(date.today())
-DATE_STRING = "20191125"
+DATE_STRING = "20191127"
 ##### ##### #####
-N_FILES = 10
+
 flag = 0 #0 doesn't move the files, 1 does . 
 
 
@@ -75,11 +75,12 @@ for i in range(0, len(out)-1):
     storage_path = "/sc/CASTOR2/user/a/arocchetti/storage_osg/"+DATE_STRING
     os.makedirs(storage_path, exist_ok=True)
     os.system("ls /sc/CASTOR2")
-
-    os.system("scp -r %s:%s/%s %s" % (scp_path, mc_dir,out[i],storage_dir) )
-    print(".......extracting.....")
-    os.system("for f in %s/%s/*; do tar xf $f -C %s; done" %(storage_dir, out[i], storage_path))
-
+    if flag == 1:
+        os.system("scp -r %s:%s/%s %s" % (scp_path, mc_dir,out[i],storage_dir) )
+        print(".......extracting.....")
+        os.system("for f in %s/%s/*; do tar xf $f -C %s; done" %(storage_dir, out[i], storage_path))
+    else:
+        print("file already extracted")
 for material in material_array:
     for isotope in isotope_array:
         print("working on:", material, isotope)
@@ -89,8 +90,10 @@ for material in material_array:
         os.makedirs(dir_name_for_storage, exist_ok = True)
         
 ##########move files in the right directory
-        os.system("mv %s/%s %s" %(storage_path,osg_file_name, dir_name_for_storage))
-        
+        if flag == 1:
+            os.system("mv %s/%s %s" %(storage_path,osg_file_name, dir_name_for_storage))
+        else:
+            print("files already in dir")
 ##########hadd nSorted files 
 
         PATH ="/sc/userdata/arocchetti/XENONnT_"+ DATE_STRING + "/" + material + "/" + isotope  #for analysis
