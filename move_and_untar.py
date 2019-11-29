@@ -1,0 +1,97 @@
+#!/usr/bin/python
+
+import sys
+import os
+from datetime import date
+#import tqdm
+
+import subprocess
+from pexpect import pxssh
+##### INPUT PARAMETER #####
+
+material_array = ["SS_OuterCryostat",
+                "SS_InnerCryostat",
+                "OuterCryostatReflector",
+                "SS_BellPlate",
+                "SS_BellSideWall",
+                "PmtTpc",
+                "Copper_TopRing",
+                "Copper_LowerRing",
+                "Teflon_Pillar_",
+                "Copper_FieldGuard_",
+                "Copper_FieldShaperRing_",
+                "SS_GateRing",
+                "SS_AnodeRing",
+                "SS_TopMeshRing",
+                "SS_CathodeRing",
+                "SS_BottomMeshRing",
+                "Teflon_BottomTPC",
+                "Teflon_TPC",
+                "GXeTeflon_TopElectrodesFrame",
+                "Teflon_TopElectrodesFrame",
+                "Copper_BottomPmtPlate",
+                "Copper_TopPmtPlate",
+                ]
+
+isotope_array = ["U238",
+                "Co60",
+                "K40",
+                "Cs137",
+                "Th228",
+                "U235",
+                "Th232",
+                "Ra226",
+                #"geantinos"
+                ]
+
+EVENT_COUNT = 100000
+#material_array = ["SS_OuterCryostat"]
+#isotope_array = ["Th232"]
+#DATE_STRING = str(date.today())
+DATE_STRING = "20191128"
+##### ##### #####
+
+localfile = DATE_STRING+"T"
+mc_dir =  "/scratch/arianna/er/processing/montecarlo/output/ariannarocchetti/pegasus/montecarlo/"
+scp_path = "ariannarocchetti@login.xenon.ci-connect.net"
+scp_domain="login.xenon.ci-connect.net"
+
+#get list of directories to copy
+
+command = ("ssh ariannarocchetti@login.xenon.ci-connect.net ls  /scratch/arianna/er/processing/montecarlo/output/ariannarocchetti/pegasus/montecarlo/")
+list_=subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+(out, err)=list_.communicate()
+out = out.decode("utf-8")
+out = out.split("\n")
+
+storage_path = "/project2/lgrandi/xenonnt/simulations/er_simulations"
+"""
+for i in range(0, len(out)-1):
+    string_dir_to_get = scp_path+mc_dir+out[i]
+    os.makedirs(storage_path, exist_ok=True)
+    os.system("scp -r %s:%s/%s %s" % (scp_path, mc_dir,out[i],storage_path) )
+    print(".......extracting.....")
+    os.system("for f in %s/%s/*; do tar xf $f -C %s; done" %(storage_path, out[i], storage_path))
+"""
+os.makedirs("%s/logs"%storage_path, exist_ok = True)
+os.system("mv *.log %s/logs" %storage_path)
+os.system("mv *.dat %s/logs" %storage_path)
+for material in material_array:
+    for isotope in isotope_array:
+        print("working on:", material, isotope)
+        osg_file_name = "Xenon1T_ER_" + material+ "_" + isotope + "_*" + ".root"
+##########make directory for a nice storage tree
+        dir_name_for_storage = storage_path + "/"+material+"/"+isotope
+        os.makedirs(dir_name_for_storage, exist_ok = True)
+
+##########move files in the right directory
+        #os.system("mv %s/%s %s" %(storage_path,osg_file_name, dir_name_for_storage))
+##########hadd nSorted files 
+
+        name_final_file = dir_name_for_storage +"/output_"+ material + '_' + isotope +  '_FINAL'+"_Sort.root"
+        files_name = "Xenon1T_ER_" + material+ "_" + isotope + "*" + "_Sort.root"
+        files_to_add = dir_name_for_storage+"/"+files_name
+        os.system("hadd -f %s %s"%(name_final_file, files_to_add))
+print("DONE!")
+
+
