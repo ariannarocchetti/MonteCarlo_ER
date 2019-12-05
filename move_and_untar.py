@@ -20,14 +20,9 @@ material_array = ["SS_OuterCryostat",
                 "Teflon_Pillar_",
                 "Copper_FieldGuard_",
                 "Copper_FieldShaperRing_",
-                "SS_GateRing",
                 "SS_AnodeRing",
-                "SS_TopMeshRing",
-                "SS_CathodeRing",
-                "SS_BottomMeshRing",
                 "Teflon_BottomTPC",
                 "Teflon_TPC",
-                "GXeTeflon_TopElectrodesFrame",
                 "Teflon_TopElectrodesFrame",
                 "Copper_BottomPmtPlate",
                 "Copper_TopPmtPlate",
@@ -45,10 +40,10 @@ isotope_array = ["U238",
                 ]
 
 EVENT_COUNT = 100000
-#material_array = ["SS_OuterCryostat"]
+material_array = ["SS_OuterCryostat"]
 #isotope_array = ["Th232"]
 #DATE_STRING = str(date.today())
-DATE_STRING = "20191128"
+DATE_STRING = "20191203"
 ##### ##### #####
 
 localfile = DATE_STRING+"T"
@@ -56,6 +51,7 @@ mc_dir =  "/scratch/arianna/er/processing/montecarlo/output/ariannarocchetti/peg
 scp_path = "ariannarocchetti@login.xenon.ci-connect.net"
 scp_domain="login.xenon.ci-connect.net"
 
+os.system("source activate pax_head")
 #get list of directories to copy
 
 command = ("ssh ariannarocchetti@login.xenon.ci-connect.net ls  /scratch/arianna/er/processing/montecarlo/output/ariannarocchetti/pegasus/montecarlo/")
@@ -64,34 +60,34 @@ list_=subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
 out = out.decode("utf-8")
 out = out.split("\n")
 
-storage_path = "/project2/lgrandi/xenonnt/simulations/er_simulations"
-"""
-for i in range(0, len(out)-1):
-    string_dir_to_get = scp_path+mc_dir+out[i]
-    os.makedirs(storage_path, exist_ok=True)
-    os.system("scp -r %s:%s/%s %s" % (scp_path, mc_dir,out[i],storage_path) )
-    print(".......extracting.....")
-    os.system("for f in %s/%s/*; do tar xf $f -C %s; done" %(storage_path, out[i], storage_path))
-"""
+storage_path = "/sc/userdata/arocchetti/example" 
+os.makedirs(storage_path, exist_ok=True)
+
 os.makedirs("%s/logs"%storage_path, exist_ok = True)
-os.system("mv *.log %s/logs" %storage_path)
-os.system("mv *.dat %s/logs" %storage_path)
+for i in range(len(out)-2, len(out)-1):
+     print("-------", out[i])
+     os.system("scp -r %s:%s/%s %s" % (scp_path, mc_dir,out[i],storage_path) )
+     os.chdir("%s/s" %(storage_path, out[i]))
+     os.system("./untar.sh")
+     os.chdir("%s", %storage_path)
+     os.system("cp %s/*_Sort.root %s",%(out[i], storage_path )   
+
 for material in material_array:
     for isotope in isotope_array:
         print("working on:", material, isotope)
         osg_file_name = "Xenon1T_ER_" + material+ "_" + isotope + "_*" + ".root"
 ##########make directory for a nice storage tree
-        dir_name_for_storage = storage_path + "/"+material+"/"+isotope
+        dir_name_for_storage = storage_path + "/final_files/"+material+"/"+isotope
         os.makedirs(dir_name_for_storage, exist_ok = True)
 
 ##########move files in the right directory
-        #os.system("mv %s/%s %s" %(storage_path,osg_file_name, dir_name_for_storage))
+        os.system("mv %s/%s %s" %(storage_path,osg_file_name, dir_name_for_storage))
 ##########hadd nSorted files 
 
         name_final_file = dir_name_for_storage +"/output_"+ material + '_' + isotope +  '_FINAL'+"_Sort.root"
         files_name = "Xenon1T_ER_" + material+ "_" + isotope + "*" + "_Sort.root"
-        files_to_add = dir_name_for_storage+"/"+files_name
-        os.system("hadd -f %s %s"%(name_final_file, files_to_add))
-print("DONE!")
+        
+        os.system("hadd -f %s %s"%(name_final_file, files_name))
 
+print("DONE!")
 
