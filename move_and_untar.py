@@ -40,10 +40,17 @@ isotope_array = ["U238",
                 ]
 
 EVENT_COUNT = 100000
+<<<<<<< HEAD
 #material_array = ["SS_InnerCryostat"]
 #isotope_array = ["Th232"]
 #DATE_STRING = str(date.today())
 DATE_STRING = "20191204"
+=======
+material_array = ["SS_OuterCryostat"]
+#isotope_array = ["Th232"]
+#DATE_STRING = str(date.today())
+DATE_STRING = "20191203"
+>>>>>>> 6fb8f6e4b447daaa7d754066146fe61c3a6c7cba
 ##### ##### #####
 
 localfile = DATE_STRING+"T"
@@ -75,6 +82,21 @@ for i in range(0, len(out)-2):
      os.chdir("%s" %storage_path)
      os.system("cp %s/*_Sort.root %s" %(out[i], storage_path ))   
 
+<<<<<<< HEAD
+=======
+storage_path = "/sc/userdata/arocchetti/example" 
+os.makedirs(storage_path, exist_ok=True)
+
+os.makedirs("%s/logs"%storage_path, exist_ok = True)
+for i in range(len(out)-2, len(out)-1):
+     print("-------", out[i])
+     os.system("scp -r %s:%s/%s %s" % (scp_path, mc_dir,out[i],storage_path) )
+     os.chdir("%s/s" %(storage_path, out[i]))
+     os.system("./untar.sh")
+     os.chdir("%s", %storage_path)
+     os.system("cp %s/*_Sort.root %s",%(out[i], storage_path )   
+
+>>>>>>> 6fb8f6e4b447daaa7d754066146fe61c3a6c7cba
 for material in material_array:
     for isotope in isotope_array:
         print("working on:", material, isotope)
@@ -89,5 +111,12 @@ for material in material_array:
 
         name_final_file = dir_name_for_storage +"/output_"+ material + '_' + isotope +  '_FINAL'+"_Sort.root"
         files_name = "Xenon1T_ER_" + material+ "_" + isotope + "*" + "_Sort.root"
+<<<<<<< HEAD
         os.system("hadd -f %s %s"%(name_final_file, name_final_file))
+=======
+        
+        os.system("hadd -f %s %s"%(name_final_file, files_name))
+
+print("DONE!")
+>>>>>>> 6fb8f6e4b447daaa7d754066146fe61c3a6c7cba
 
