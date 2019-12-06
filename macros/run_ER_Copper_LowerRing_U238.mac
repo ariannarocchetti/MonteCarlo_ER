@@ -1,0 +1,32 @@
+#VERBOSITY
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/xe/gun/verbose 0
+
+#SEED
+/run/random/setRandomSeed 0
+
+# General source settings
+/xe/gun/angtype  iso
+/xe/gun/type  Volume
+/xe/gun/shape  Cylinder
+/xe/gun/center  0. 0. -70. cm
+/xe/gun/radius 100. cm
+/xe/gun/halfz 170. cm
+/xe/gun/energy 0 keV
+/xe/gun/particle ion
+
+/xe/gun/confine Copper_LowerRing
+### U238->Th230 (incl.)
+/xe/gun/ion 92 238 0 0
+/grdm/nucleusLimits 238 230 92 90
+
+#ADVANCED RUN OPTIONS
+/analysis/settings/setPMTdetails true
+/xe/Postponedecay true
+/run/forced/setVarianceReduction false
+/Xe/detector/setLXeScintillation false
+/run/writeEmpty true
+/Xe/detector/setGdLScintScintillation false

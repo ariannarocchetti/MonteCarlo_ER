@@ -19,15 +19,9 @@ material_array = ["SS_OuterCryostat",
                 "Copper_FieldShaperRing_",
                 "SS_GateRing",
                 "SS_AnodeRing",
-                #"SS_TopMeshRing",
-                #"SS_CathodeRing",
-                #"SS_BottomMeshRing",
                 "Teflon_BottomTPC",
                 "Teflon_TPC",
-                #"GXeTeflon_TopElectrodesFrame",
-                "Teflon_TopElectrodesFrame",
                 "Copper_BottomPmtPlate",
-                "Copper_TopPmtPlate",
                 ]
 
 isotope_array = ["U238",
@@ -68,7 +62,6 @@ for MATERIAL_STRING in material_array:
  
          #for the ones who want the i*
         if ((MATERIAL_STRING == "PmtTpc") |
-           (MATERIAL_STRING == "Teflon_Pillar_") |
            (MATERIAL_STRING == "Copper_FieldGuard_")|
            (MATERIAL_STRING == "Copper_FieldShaperRing_")) :
             f.write("/xe/gun/confine " + MATERIAL_STRING + "*" + '\n')
@@ -77,9 +70,15 @@ for MATERIAL_STRING in material_array:
             # f.write("/xe/gun/confine " + MATERIAL_STRING + "*" + '\n')
             f.write("/xe/gun/confine SS_AnodeRing SS_TopMeshRing SS_CathodeRing SS_BottomMeshRing" + "\n")
             #print("----------------")
-        elif (MATERIAL_STRING == "Teflon_TopElectrodesFrame"):
-            f.write("GXeTeflon_TopElectrodesFrame Teflon_TopElectrodesFrame" + "\n")
+      
+        elif (MATERIAL_STRING == "Teflon_Pillar_"):
+            f.write("/xe/gun/confine Teflon_Pillar_* GXeTeflon_TopElectrodesFrame Teflon_TopElectrodesFrame" + "\n")
         
+        elif (MATERIAL_STRING == "Copper_BottomPmtPlate"):
+            f.write("/xe/gun/confine Copper_BottomPmtPlate Copper_TopPmtPlate" +"\n")
+
+        elif (MATERIAL_STRING == "Copper_TopRing"):
+            f.write("/xe/gun/confine Copper_TopRing Copper_LowerRing" + "\n")
         else:
             f.write("/xe/gun/confine " + MATERIAL_STRING + '\n')
         
